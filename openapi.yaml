@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Binarly's XZ backdoor detector
+  title: Team Logic Minions Swagger OpenApi Documentation
   version: "1.0.0"
 servers:
   - url: https://boilerplate.vercel.app/api/v1
