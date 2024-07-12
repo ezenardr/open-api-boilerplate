@@ -1,1382 +1,305 @@
 openapi: 3.0.3
 info:
-  title: Team Logic Minions Swagger OpenApi Documentation
-  version: "1.0.0"
+  version: 1.0.0
+  title: User Authentication - OpenAPI 3.0
+  description: >-
+    This is a sample User authentication api Server based on the OpenAPI 3.0
+    specification.
+
+    This was done under supervision of HNG mentors at HNG11 internship. 
+
+    You can now help us improve the API whether it's by making changes to the
+    definition itself or to the code.
+
+    That way, with time, we can improve the API in general, and expose some of
+    the new features in OAS3.
+  contact:
+    email: ezenardr.dev@gmail.com
 servers:
-  - url: https://boilerplate.vercel.app/api/v1
+  - url: https://mwk8cgk.api.ezenardr.dev
+tags:
+  - name: user
+    description: Operations about user
 paths:
-  # /:
-  #   post:
-  #     summary: Analyse the given ELF binary to check for potential implants
-  #     operationId: analyse
-  #     description: ELF binary to analyse to check for potential implants
-  #     requestBody:
-  #       description: ELF binary to analyse
-  #       content:
-  #         multipart/form-data:
-  #           schema:
-  #             type: object
-  #             properties:
-  #               file:
-  #                 type: string
-  #                 description: ELF binary to analyse
-  #                 format: binary
-  #       required: true
-  #     responses:
-  #       '200':
-  #         description: Analysis result
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 status:
-  #                   type: string
-  #                   description: The analysis result (malicious, benign, etc.)
-  #                 details:
-  #                   type: object
-  #                   properties:
-  #                     hashes:
-  #                       type: object
-  #                       properties:
-  #                         md5:
-  #                           type: string
-  #                           description: MD5 hash of the input
-  #                         sha1:
-  #                           type: string
-  #                           description: SHA-1 hash of the input
-  #                         sha256:
-  #                           type: string
-  #                           description: SHA-256 hash of the input
-  #                         sha512:
-  #                           type: string
-  #                           description: SHA-512 hash of the input
-  #                     analysis-time:
-  #                       type: string
-  #                       description: Time taken for the analysis engine to analyse the binary
-  #                     suspicious-ifunc-resolvers:
-  #                       type: array
-  #                       description: List of IFUNC resolvers marked as suspicious
-  #                       items:
-  #                         type: number
-  #                         description: Suspicious IFUNC resolver
-  #                     potential-triggers:
-  #                       type: array
-  #                       description: List of addresses marked as likely places to where the backdoor payload is triggered
-  #                       items:
-  #                         type: number
-  /register:
+  /api/auth/register:
     post:
-      summary: USER Creates an account with a post request
-      operationId: registerUser
-      description: USER Creates an account with a post request
+      tags:
+        - user
+      summary: Create user
+      description: This can be done by anyone that want to create an account
+      operationId: createUser
       requestBody:
-        description: User registration data
-        required: true
+        description: Created user object
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: User's full name
-                email:
-                  type: string
-                  format: email
-                  description: User's email address
-                username:
-                  type: string
-                  description: User's username
-                password:
-                  type: string
-                  format: password
-                  description: User's password
-                user_id:
-                  type: string
-                  format: uuid
-                  description: User's unique identifier
+              $ref: '#/components/schemas/User'
       responses:
-        '200':
-          description: User successfully registered
+        '201':
+          description: successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    description: The status of the registration (e.g., success, error)
-                  data:
-                    type: object
-                    properties:
-                      user_id:
-                        type: string
-                        description: The user's unique identifier
-                      name:
-                        type: string
-                        description: The user's full name
-                      email:
-                        type: string
-                        description: The user's email address
-                      username:
-                        type: string
-                        description: The user's username
+                $ref: '#/components/schemas/UserSuccesfull'
         '400':
-          description: Bad request
+          description: unsuccessful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  message:
-                    type: string
-                    description: Error message
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  message:
-                    type: string
-                    description: Error message
-  /login:
+                $ref: '#/components/schemas/UserUnsuccesful'
+  /api/auth/login:
     post:
-      summary: USER Logs in with a post request
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
       operationId: loginUser
-      description: USER Logs in with a post request
       requestBody:
-        description: User login data
-        required: true
+        description: Login user object
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                  description: User's email address
-                password:
-                  type: string
-                  format: password
-                  description: User's password
-      security:
-        - bearerAuth: []
+              $ref: '#/components/schemas/Login'
       responses:
         '200':
-          description: User successfully logged in
+          description: successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    description: The status of the login (e.g., success, error)
-                  data:
-                    type: object
-                    properties:
-                      accessToken:
-                        type: string
-                        description: JWT access token
-                      refreshToken:
-                        type: string
-                        description: JWT refresh token
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  message:
-                    type: string
-                    description: Error message
+                $ref: '#/components/schemas/LoginSuccesfull'
         '401':
-          description: Unauthorized
+          description: unsuccesfull operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  message:
-                    type: string
-                    description: Error message
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  message:
-                    type: string
-                    description: Error message
-      
-  /auth/social:
-    post:
-      summary: Social Authentication
-      operationId: socialAuth
-      description: Authenticate user via social platforms
-      requestBody:
-        description: Social authentication data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                provider:
-                  type: string
-                  description: Social provider (e.g., google, facebook)
-                token:
-                  type: string
-                  description: OAuth token
-      responses:
-        '200':
-          description: Authentication successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      accessToken:
-                        type: string
-                      refreshToken:
-                        type: string
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /auth/magic-link:
-    post:
-      summary: Magic Link Authentication
-      operationId: magicLinkAuth
-      description: Authenticate user via magic link
-      requestBody:
-        description: Magic link data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: User's email address
-      responses:
-        '200':
-          description: Magic link sent
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                  message:
-                    type: string
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /auth/change-password:
-    post:
-      summary: Change Password
-      operationId: changePassword
-      description: Change user's password
-      requestBody:
-        description: Change password data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                oldPassword:
-                  type: string
-                  description: User's current password
-                newPassword:
-                  type: string
-                  description: User's new password
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Password changed successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /messages/send:
-    post:
-      summary: Send Message
-      operationId: sendMessage
-      description: Send a message via email
-      requestBody:
-        description: Message data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                to:
-                  type: string
-                  description: Recipient's email address
-                subject:
-                  type: string
-                  description: Email subject
-                body:
-                  type: string
-                  description: Email body
-      responses:
-        '200':
-          description: Message sent successfully
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /payments/stripe:
-    post:
-      summary: Stripe Payment
-      operationId: stripePayment
-      description: Process payment via Stripe
-      requestBody:
-        description: Payment data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                amount:
-                  type: number
-                  description: Payment amount
-                currency:
-                  type: string
-                  description: Payment currency
-                source:
-                  type: string
-                  description: Payment source (e.g., token from Stripe)
-      responses:
-        '200':
-          description: Payment processed successfully
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /payments/flutterwave:
-    post:
-      summary: Flutterwave Payment
-      operationId: flutterwavePayment
-      description: Process payment via Flutterwave
-      requestBody:
-        description: Payment data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                amount:
-                  type: number
-                  description: Payment amount
-                currency:
-                  type: string
-                  description: Payment currency
-                source:
-                  type: string
-                  description: Payment source (e.g., token from Flutterwave)
-      responses:
-        '200':
-          description: Payment processed successfully
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /payments/lemonsqueezy:
-    post:
-      summary: LemonSqueezy Payment
-      operationId: lemonsqueezyPayment
-      description: Process payment via LemonSqueezy
-      requestBody:
-        description: Payment data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                amount:
-                  type: number
-                  description: Payment amount
-                currency:
-                  type: string
-                  description: Payment currency
-                source:
-                  type: string
-                  description: Payment source (e.g., token from LemonSqueezy)
-      responses:
-        '200':
-          description: Payment processed successfully
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /users:
+                $ref: '#/components/schemas/LoginUnsuccesfull'
+  /api/auth/logout:
     get:
-      summary: Get Users
-      operationId: getUsers
-      description: Retrieve a list of users
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
       security:
-        - bearerAuth: []
+        - access_token: []
       responses:
-        '200':
-          description: Users retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    userId:
-                      type: string
-                    name:
-                      type: string
-                    email:
-                      type: string
-                    username:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
+        default:
+          description: successful operation
   /users/{userId}:
     get:
-      summary: Get User
-      operationId: getUser
-      description: Retrieve a specific user
+      tags:
+        - user
+      summary: Get user by id
+      description: ''
+      operationId: getUserByName
+      security:
+        - access_token: []
       parameters:
         - name: userId
           in: path
+          description: The Id of the user that needs to be fetched.
           required: true
           schema:
             type: string
-      security:
-        - bearerAuth: []
       responses:
         '200':
-          description: User retrieved successfully
+          description: successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  userId:
-                    type: string
-                  name:
-                    type: string
-                  email:
-                    type: string
-                  username:
-                    type: string
+                $ref: '#/components/schemas/UserFound'
         '401':
-          description: Unauthorized
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
         '404':
           description: User not found
-        '500':
-          description: Internal server error
-
-  /organisations:
-    get:
-      summary: Get Organisations
-      operationId: getOrganisations
-      description: Retrieve a list of organisations
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Organisations retrieved successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    orgId:
-                      type: string
-                    name:
-                      type: string
-                    description:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /organisations/{orgId}:
-    get:
-      summary: Get Organisation
-      operationId: getOrganisation
-      description: Retrieve a specific organisation
-      parameters:
-        - name: orgId
-          in: path
-          required: true
-          schema:
-            type: string
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Organisation retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  orgId:
-                    type: string
-                  name:
-                    type: string
-                  description:
-                    type: string
-        '401':
-          description: Unauthorized
-        '404':
-          description: Organisation not found
-        '500':
-          description: Internal server error
-
-  /superadmin/users:
-    get:
-      summary: Get All Users
-      operationId: superadminGetUsers
-      description: Retrieve all users for superadmin
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Users retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    userId:
-                      type: string
-                    name:
-                      type: string
-                    email:
-                      type: string
-                    username:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /superadmin/organisations:
-    get:
-      summary: Get All Organisations
-      operationId: superadminGetOrganisations
-      description: Retrieve all organisations for superadmin
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Organisations retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    orgId:
-                      type: string
-                    name:
-                      type: string
-                    description:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /superadmin/payments:
-    get:
-      summary: Get All Payments
-      operationId: superadminGetPayments
-      description: Retrieve all payments for superadmin
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Payments retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    paymentId:
-                      type: string
-                    userId:
-                      type: string
-                    orgId:
-                      type: string
-                    amount:
-                      type: number
-                    currency:
-                      type: string
-                    status:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /superadmin/activity-log:
-    get:
-      summary: Get Activity Log
-      operationId: superadminGetActivityLog
-      description: Retrieve activity log for superadmin
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Activity log retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    logId:
-                      type: string
-                    userId:
-                      type: string
-                    action:
-                      type: string
-                    timestamp:
-                      type: string
-                      format: date-time
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /settings:
-    get:
-      summary: Get Settings
-      operationId: getSettings
-      description: Retrieve application settings
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Settings retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  settings:
-                    type: object
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-    post:
-      summary: Update Settings
-      operationId: updateSettings
-      description: Update application settings
-      requestBody:
-        description: Settings data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                settings:
-                  type: object
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Settings updated successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /profile:
-    get:
-      summary: Get Profile
-      operationId: getProfile
-      description: Retrieve user profile
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Profile retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  userId:
-                    type: string
-                  name:
-                    type: string
-                  email:
-                    type: string
-                  username:
-                    type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-    post:
-      summary: Update Profile
-      operationId: updateProfile
-      description: Update user profile
-      requestBody:
-        description: Profile data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                username:
-                  type: string
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Profile updated successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /contact-us:
-    post:
-      summary: Contact Us
-      operationId: contactUs
-      description: Submit a contact us request
-      requestBody:
-        description: Contact data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: User's full name
-                email:
-                  type: string
-                  description: User's email address
-                message:
-                  type: string
-                  description: User's message
-      responses:
-        '200':
-          description: Contact request submitted successfully
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /gpdr-cookies:
-    get:
-      summary: Get GPDR Cookies Settings
-      operationId: getGpdrCookiesSettings
-      description: Retrieve GPDR cookies settings
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: GPDR cookies settings retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  settings:
-                    type: object
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-    post:
-      summary: Update GPDR Cookies Settings
-      operationId: updateGpdrCookiesSettings
-      description: Update GPDR cookies settings
-      requestBody:
-        description: GPDR cookies settings data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                settings:
-                  type: object
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: GPDR cookies settings updated successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /waitlist:
-    get:
-      summary: Get Waitlist
-      operationId: getWaitlist
-      description: Retrieve waitlist
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Waitlist retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    userId:
-                      type: string
-                    name:
-                      type: string
-                    email:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /invite:
-    post:
-      summary: Invite User
-      operationId: inviteUser
-      description: Invite a user via email
-      requestBody:
-        description: Invite data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: User's email address to be invited
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: User invited successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /data/export:
-    get:
-      summary: Export User Data
-      operationId: exportUserData
-      description: Export user data
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: User data exported successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  url:
-                    type: string
-                    description: URL to download the exported data
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /random-data:
-    get:
-      summary: Get Random Data
-      operationId: getRandomData
-      description: Retrieve random data associated with the user
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Random data retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    dataId:
-                      type: string
-                    userId:
-                      type: string
-                    content:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /random-data/{dataId}:
-    get:
-      summary: Get Single Data
-      operationId: getSingleData
-      description: Retrieve a single piece of random data
-      parameters:
-        - name: dataId
-          in: path
-          required: true
-          schema:
-            type: string
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Random data retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  dataId:
-                    type: string
-                  userId:
-                    type: string
-                  content:
-                    type: string
-        '401':
-          description: Unauthorized
-        '404':
-          description: Data not found
-        '500':
-          description: Internal server error
-
-  /other-data:
-    get:
-      summary: Get Other Data
-      operationId: getOtherData
-      description: Retrieve a list of other data with search and sorting
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: search
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: sort
-          in: query
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Other data retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    dataId:
-                      type: string
-                    userId:
-                      type: string
-                    content:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /charts:
-    get:
-      summary: Get Data Charts
-      operationId: getDataCharts
-      description: Retrieve chart data for the user
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Chart data retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    chartId:
-                      type: string
-                    userId:
-                      type: string
-                    data:
-                      type: array
-                      items:
-                        type: number
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /content-edit:
-    get:
-      summary: Get Content for Editing
-      operationId: getContentForEditing
-      description: Retrieve content for editing
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Content retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  contentId:
-                    type: string
-                  userId:
-                    type: string
-                  content:
-                    type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-    post:
-      summary: Update Content
-      operationId: updateContent
-      description: Update content
-      requestBody:
-        description: Content data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                contentId:
-                  type: string
-                content:
-                  type: string
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Content updated successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /notifications:
-    get:
-      summary: Get Notifications
-      operationId: getNotifications
-      description: Retrieve user notifications
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Notifications retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    notificationId:
-                      type: string
-                    userId:
-                      type: string
-                    message:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /blog:
-    get:
-      summary: Get Blog Posts
-      operationId: getBlogPosts
-      description: Retrieve blog posts
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Blog posts retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    postId:
-                      type: string
-                    title:
-                      type: string
-                    content:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-    post:
-      summary: Create Blog Post
-      operationId: createBlogPost
-      description: Create a new blog post
-      requestBody:
-        description: Blog post data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                content:
-                  type: string
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Blog post created successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /invite-link:
-    post:
-      summary: Create Invite Link
-      operationId: createInviteLink
-      description: Create an invite link
-      requestBody:
-        description: Invite link data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: User's email address to be invited
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Invite link created successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /language-region:
-    get:
-      summary: Get Language and Region
-      operationId: getLanguageAndRegion
-      description: Retrieve user's language and region settings
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Language and region settings retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  language:
-                    type: string
-                  region:
-                    type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-    post:
-      summary: Update Language and Region
-      operationId: updateLanguageAndRegion
-      description: Update user's language and region settings
-      requestBody:
-        description: Language and region data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                language:
-                  type: string
-                region:
-                  type: string
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Language and region settings updated successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-  /email-templates:
-    get:
-      summary: Get Email Templates
-      operationId: getEmailTemplates
-      description: Retrieve email templates
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Email templates retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    templateId:
-                      type: string
-                    subject:
-                      type: string
-                    body:
-                      type: string
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
-    post:
-      summary: Create Email Template
-      operationId: createEmailTemplate
-      description: Create a new email template
-      requestBody:
-        description: Email template data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                subject:
-                  type: string
-                body:
-                  type: string
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Email template created successfully
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal server error
-
+                $ref: '#/components/schemas/UserNotFound'
 components:
+  schemas:
+    User:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        phone:
+          type: string
+          example: '12345'
+    UserSuccesfull:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Registration successfull
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: >-
+                oat_MzY.X3RwX0ZtQXI1QWNiX1pZMlFidnR1MkVsR3l3bTN3SW5ZcDdNX3JFWjE2OTIyOTEwMTE
+            user:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: 48196700-bfd0-4ba4-918e-8df2eeb2ce6d
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: James
+                email:
+                  type: string
+                  example: john@email.com
+                phone:
+                  type: string
+    UserUnsuccesful:
+      type: object
+      properties:
+        status:
+          type: string
+          example: Bad resquest
+        message:
+          type: string
+          example: Registration unsuccessful
+        statusCode:
+          type: string
+          example: 400
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+    LoginSuccesfull:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Login successfull
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: >-
+                oat_MzY.X3RwX0ZtQXI1QWNiX1pZMlFidnR1MkVsR3l3bTN3SW5ZcDdNX3JFWjE2OTIyOTEwMTE
+            user:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: 48196700-bfd0-4ba4-918e-8df2eeb2ce6d
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: James
+                email:
+                  type: string
+                  example: john@email.com
+                phone:
+                  type: string
+    LoginUnsuccesfull:
+      type: object
+      properties:
+        status:
+          type: string
+          example: Bad request
+        message:
+          type: string
+          example: Authentification failed
+        statusCode:
+          type: string
+          example: 401
+    UserFound:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: User found
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: >-
+                oat_MzY.X3RwX0ZtQXI1QWNiX1pZMlFidnR1MkVsR3l3bTN3SW5ZcDdNX3JFWjE2OTIyOTEwMTE
+            user:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: 48196700-bfd0-4ba4-918e-8df2eeb2ce6d
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: James
+                email:
+                  type: string
+                  example: john@email.com
+                phone:
+                  type: string
+    UserNotFound:
+      type: object
+      properties:
+        status:
+          type: string
+          example: Bad request
+        message:
+          type: string
+          example: User not found
+        statusCode:
+          type: string
+          example: 404
+    Unauthorized:
+      type: object
+      properties:
+        errors:
+          type: string
+          example: Unauthorized access
+  requestBodies:
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    access_token:
+      type: apiKey
+      name: access_token
+      in: header
